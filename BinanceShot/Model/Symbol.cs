@@ -191,7 +191,7 @@ namespace BinanceShot.Model
                     if (price_close_order_x.Count > 0)
                     {
                         plt.Plot.Remove(close_order);
-                        close_order = plt.Plot.AddScatter(price_close_order_x.ToArray(), price_close_order_y.ToArray(), color: Color.Orange, lineWidth: 0, markerSize: 8, markerShape: ScottPlot.MarkerShape.eks);
+                        close_order = plt.Plot.AddScatter(price_close_order_x.ToArray(), price_close_order_y.ToArray(), color: Color.Red, lineWidth: 0, markerSize: 10, markerShape: ScottPlot.MarkerShape.eks);
                         close_order.YAxisIndex = 1;
                     }
                     if(AutoPlay) plt.Plot.SetAxisLimits(xMin: _UpdateTime.AddMinutes(-1).ToOADate(), xMax: _UpdateTime.AddSeconds(10).ToOADate(), yAxisIndex: 1);
@@ -212,11 +212,14 @@ namespace BinanceShot.Model
                 _PastPrice = value;
                 OnPropertyChanged("PastPrice");
                 PriceActivateLong = (value - (value * _Percent));
-                PriceStopLossLong = (_PriceActivateLong - (PriceActivateLong * _PercentStopLoss));
-                PriceTakeProfitLong = (_PriceActivateLong + (PriceActivateLong * _PercentTakeProfit));
                 PriceActivateShort = (value + (value * _Percent));
-                PriceStopLossShort = (_PriceActivateShort + (_PriceActivateShort * _PercentStopLoss));
-                PriceTakeProfitShort = (_PriceActivateShort - (_PriceActivateShort * _PercentTakeProfit));
+                if (!isBet)
+                {
+                    PriceStopLossLong = (_PriceActivateLong - (PriceActivateLong * _PercentStopLoss));
+                    PriceTakeProfitLong = (_PriceActivateLong + (PriceActivateLong * _PercentTakeProfit));
+                    PriceStopLossShort = (_PriceActivateShort + (_PriceActivateShort * _PercentStopLoss));
+                    PriceTakeProfitShort = (_PriceActivateShort - (_PriceActivateShort * _PercentTakeProfit));
+                }
             }
         }
         private decimal _PriceActivateLong { get; set; }
@@ -253,7 +256,7 @@ namespace BinanceShot.Model
                 }
             }
         }
-        private decimal _PercentStopLoss { get; set; } = 0.005m;
+        private decimal _PercentStopLoss { get; set; } = 0.0045m;
         public decimal PercentStopLoss
         {
             get { return _PercentStopLoss; }
@@ -266,7 +269,7 @@ namespace BinanceShot.Model
                 }
             }
         }
-        private decimal _PercentTakeProfit { get; set; } = 0.005m;
+        private decimal _PercentTakeProfit { get; set; } = 0.0015m;
         public decimal PercentTakeProfit
         {
             get { return _PercentTakeProfit; }
