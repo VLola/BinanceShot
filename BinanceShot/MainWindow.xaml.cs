@@ -5,11 +5,14 @@ using BinanceShot.Errors;
 using BinanceShot.Model;
 using BinanceShot.ViewModel;
 using Newtonsoft.Json;
+using ScottPlot.Plottable;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,6 +23,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Color = System.Drawing.Color;
 
 namespace BinanceShot
 {
@@ -28,34 +32,39 @@ namespace BinanceShot
     /// </summary>
     public partial class MainWindow : Window
     {
+        public VariablesMain Variables { get; set; } = new VariablesMain();
         public string API_KEY { get; set; } = "";
         public string SECRET_KEY { get; set; } = "";
         public string CLIENT_NAME { get; set; } = "";
         public List<string> list_sumbols_name = new List<string>();
         public Socket socket;
+        public ScatterPlot prices_plot;
         public MainWindow()
         {
             InitializeComponent();
             ErrorWatcher();
             Clients();
+            Chart();
             this.DataContext = this;
         }
-
+        public SymbolControl SelectedSymbolControl;
         private void DetailSymbol_Click(object sender, RoutedEventArgs e)
         {
-            List<HistoryTrade> prices = new List<HistoryTrade>();
             Button button = (Button)sender;
             string name = (string)button.Content;
             foreach (SymbolControl it in Symbols.Children)
             {
+                it.symbol.Select = false;
+            }
+            foreach (SymbolControl it in Symbols.Children)
+            {
                 if (it.symbol.SymbolName == name)
                 {
-                    prices = it.symbol.Prices;
+                    it.symbol.Select = true;
+                    Variables.AutoPlay = it.symbol.AutoPlay;
                 }
             }
-
         }
-
         private void SellectAll_Click(object sender, RoutedEventArgs e)
         {
             CheckBox box = (CheckBox)sender;
@@ -74,6 +83,13 @@ namespace BinanceShot
                 }
             }
         }
+        private void AutoPlay_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (SymbolControl it in Symbols.Children)
+            {
+                if (it.symbol.Select) it.symbol.AutoPlay = Variables.AutoPlay;
+            }
+        }
         #region - List Sumbols -
         private void GetSumbolName()
         {
@@ -86,7 +102,7 @@ namespace BinanceShot
             foreach (var it in list_sumbols_name)
             {
                 Symbols.RowDefinitions.Add(new RowDefinition());
-                SymbolControl control = new SymbolControl(it);
+                SymbolControl control = new SymbolControl(it, plt);
                 control.DetailSymbol.Click += DetailSymbol_Click;
                 Grid.SetRow(control, i);
                 Symbols.Children.Add(control);
@@ -239,5 +255,32 @@ namespace BinanceShot
         }
         // ------------------------------------------------------- End Error Text Block ----------------------------------------
         #endregion
+
+        #region - Chart -
+        private void Chart()
+        {
+            plt.Plot.Layout(padding: 12);
+            plt.Plot.Style(figureBackground: Color.Black, dataBackground: Color.Black);
+            plt.Plot.Frameless();
+            plt.Plot.XAxis.TickLabelStyle(color: Color.White);
+            plt.Plot.XAxis.TickMarkColor(ColorTranslator.FromHtml("#333333"));
+            plt.Plot.XAxis.MajorGrid(color: ColorTranslator.FromHtml("#333333"));
+
+            plt.Plot.YAxis.Ticks(false);
+            plt.Plot.YAxis.Grid(false);
+            plt.Plot.YAxis2.Ticks(true);
+            plt.Plot.YAxis2.Grid(true);
+            plt.Plot.YAxis2.TickLabelStyle(color: ColorTranslator.FromHtml("#00FF00"));
+            plt.Plot.YAxis2.TickMarkColor(ColorTranslator.FromHtml("#333333"));
+            plt.Plot.YAxis2.MajorGrid(color: ColorTranslator.FromHtml("#333333"));
+
+            var legend = plt.Plot.Legend();
+            legend.FillColor = Color.Transparent;
+            legend.OutlineColor = Color.Transparent;
+            legend.Font.Color = Color.White;
+            legend.Font.Bold = true;
+        }
+        #endregion
+
     }
 }

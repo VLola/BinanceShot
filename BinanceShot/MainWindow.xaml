@@ -170,6 +170,9 @@
                         <Grid Grid.Column="0" Grid.Row="0" Style="{DynamicResource styleGridBlack}">
                             <CheckBox Content="Start All:" Click="SellectAll_Click" Style="{DynamicResource styleCheckBox}"/>
                         </Grid>
+                        <Grid Grid.Column="1" Grid.Row="0" Style="{DynamicResource styleGridBlack}">
+                            <CheckBox Content="Autoplay:" IsChecked="{Binding Path=Variables.AutoPlay}" Click="AutoPlay_Click" Style="{DynamicResource styleCheckBox}"/>
+                        </Grid>
                     </Grid>
                 </Grid>
             </Grid>
@@ -219,6 +222,9 @@
                     <ScrollViewer Grid.Row="1">
                         <Grid x:Name="Symbols"/>
                     </ScrollViewer>
+                </Grid>
+                <Grid Grid.Column="1">
+                    <WpfPlot Name="plt" Grid.Column="0"/>
                 </Grid>
             </Grid>
         </Grid>

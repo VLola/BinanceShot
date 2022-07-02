@@ -1,18 +1,32 @@
-﻿using System;
+﻿using ScottPlot.Plottable;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Runtime.CompilerServices;
+using System.Windows.Threading;
 
 namespace BinanceShot.Model
 {
     public class Symbol : INotifyPropertyChanged
     {
+        public ScatterPlot long_price;
+        public ScatterPlot short_price;
+        public ScatterPlot long_open_order;
+        public ScatterPlot short_open_order;
+        public ScatterPlot close_order;
+        public ScottPlot.WpfPlot plt;
+        public Symbol(ScottPlot.WpfPlot plt)
+        {
+            this.plt = plt;
+        }
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] string prop = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
-        public List<HistoryTrade> Prices = new List<HistoryTrade>();
+        public List<HistoryTrade> PricesBuy = new List<HistoryTrade>();
+        public List<HistoryTrade> PricesSell = new List<HistoryTrade>();
         public List<HistoryTrade> TradesLong = new List<HistoryTrade>();
         public List<HistoryTrade> TradesShort = new List<HistoryTrade>();
         private string _SymbolName { get; set; }
@@ -55,6 +69,27 @@ namespace BinanceShot.Model
                 OnPropertyChanged("BuyerIsMaker");
             }
         }
+        private bool _Select { get; set; }
+        public bool Select
+        {
+            get { return _Select; }
+            set
+            {
+                _Select = value;
+                OnPropertyChanged("Select");
+                if (value) plt.Plot.Clear();
+            }
+        }
+        List<double> price_buy_x = new List<double>();
+        List<double> price_buy_y = new List<double>();
+        List<double> price_sell_x = new List<double>();
+        List<double> price_sell_y = new List<double>();
+        List<double> price_open_long_order_x = new List<double>();
+        List<double> price_open_long_order_y = new List<double>();
+        List<double> price_open_short_order_x = new List<double>();
+        List<double> price_open_short_order_y = new List<double>();
+        List<double> price_close_order_x = new List<double>();
+        List<double> price_close_order_y = new List<double>();
         private decimal _Price { get; set; }
         public decimal Price
         {
@@ -63,49 +98,108 @@ namespace BinanceShot.Model
             {
                 _Price = value;
                 OnPropertyChanged("Price");
-                Prices.Add(new HistoryTrade(value, _UpdateTime));
+                if (!_BuyerIsMaker)
+                {
+                    price_buy_x.Add(_UpdateTime.ToOADate());
+                    price_buy_y.Add(Double.Parse(value.ToString()));
+                }
+                else
+                {
+                    price_sell_x.Add(_UpdateTime.ToOADate());
+                    price_sell_y.Add(Double.Parse(value.ToString()));
+                }
                 if (!isBet && value >= _PriceActivateShort && _PriceActivateShort > 0m)
                 {
                     CountShort = _CountShort + 1;
                     isBet = true;
                     isShort = true;
-                    TradesShort.Add(new HistoryTrade(value, _UpdateTime, true));
+                    price_open_short_order_x.Add(_UpdateTime.ToOADate());
+                    price_open_short_order_y.Add(Double.Parse(value.ToString()));
+                    //TradesShort.Add(new HistoryTrade(value, _UpdateTime, true));
                 }
                 else if (!isBet && value <= _PriceActivateLong && _PriceActivateLong > 0m)
                 {
                     CountLong = _CountLong + 1;
                     isBet = true;
                     isLong = true;
-                    TradesLong.Add(new HistoryTrade(value, _UpdateTime, true));
+                    price_open_long_order_x.Add(_UpdateTime.ToOADate());
+                    price_open_long_order_y.Add(Double.Parse(value.ToString()));
+                    //TradesLong.Add(new HistoryTrade(value, _UpdateTime, true));
                 }
                 else if (isBet && isLong && value >= PriceTakeProfitLong)
                 {
                     isLong = false;
                     isBet = false;
                     Positive = _Positive + 1;
-                    TradesLong.Add(new HistoryTrade(value, _UpdateTime));
+                    price_close_order_x.Add(_UpdateTime.ToOADate());
+                    price_close_order_y.Add(Double.Parse(value.ToString()));
+                    //TradesLong.Add(new HistoryTrade(value, _UpdateTime));
                 }
                 else if (isBet && isLong && value <= PriceStopLossLong)
                 {
                     isLong = false;
                     isBet = false;
-                    TradesLong.Add(new HistoryTrade(value, _UpdateTime));
+                    price_close_order_x.Add(_UpdateTime.ToOADate());
+                    price_close_order_y.Add(Double.Parse(value.ToString()));
+                    //TradesLong.Add(new HistoryTrade(value, _UpdateTime));
                 }
                 else if (isBet && isShort && value <= PriceTakeProfitShort)
                 {
                     isShort = false;
                     isBet = false;
                     Positive = _Positive + 1;
-                    TradesShort.Add(new HistoryTrade(value, _UpdateTime));
+                    price_close_order_x.Add(_UpdateTime.ToOADate());
+                    price_close_order_y.Add(Double.Parse(value.ToString()));
+                    //TradesShort.Add(new HistoryTrade(value, _UpdateTime));
                 }
                 else if (isBet && isShort && value >= PriceStopLossShort)
                 {
                     isShort = false;
                     isBet = false;
-                    TradesShort.Add(new HistoryTrade(value, _UpdateTime));
+                    price_close_order_x.Add(_UpdateTime.ToOADate());
+                    price_close_order_y.Add(Double.Parse(value.ToString()));
+                    //TradesShort.Add(new HistoryTrade(value, _UpdateTime));
+                }
+                // Chart
+                
+                if (_Select)
+                {
+                    if (price_buy_x.Count > 0)
+                    {
+                        plt.Plot.Remove(long_price);
+                        long_price = plt.Plot.AddScatter(price_buy_x.ToArray(), price_buy_y.ToArray(), color: Color.LightGreen, lineWidth: 0, markerSize: 5, label: _SymbolName);
+                        long_price.YAxisIndex = 1;
+                    }
+                    if (price_sell_x.Count > 0)
+                    {
+                        plt.Plot.Remove(short_price);
+                        short_price = plt.Plot.AddScatter(price_sell_x.ToArray(), price_sell_y.ToArray(), color: Color.Pink, lineWidth: 0, markerSize: 5);
+                        short_price.YAxisIndex = 1;
+                    }
+                    if (price_open_long_order_x.Count > 0)
+                    {
+                        plt.Plot.Remove(long_open_order);
+                        long_open_order = plt.Plot.AddScatter(price_open_long_order_x.ToArray(), price_open_long_order_y.ToArray(), color: Color.Green, lineWidth: 0, markerSize: 8);
+                        long_open_order.YAxisIndex = 1;
+                    }
+                    if (price_open_short_order_x.Count > 0)
+                    {
+                        plt.Plot.Remove(short_open_order);
+                        short_open_order = plt.Plot.AddScatter(price_open_short_order_x.ToArray(), price_open_short_order_y.ToArray(), color: Color.Red, lineWidth: 0, markerSize: 8);
+                        short_open_order.YAxisIndex = 1;
+                    }
+                    if (price_close_order_x.Count > 0)
+                    {
+                        plt.Plot.Remove(close_order);
+                        close_order = plt.Plot.AddScatter(price_close_order_x.ToArray(), price_close_order_y.ToArray(), color: Color.Orange, lineWidth: 0, markerSize: 8, markerShape: ScottPlot.MarkerShape.eks);
+                        close_order.YAxisIndex = 1;
+                    }
+                    if(AutoPlay) plt.Plot.SetAxisLimits(xMin: _UpdateTime.AddMinutes(-1).ToOADate(), xMax: _UpdateTime.AddSeconds(10).ToOADate(), yAxisIndex: 1);
+                    plt.Render();
                 }
             }
         }
+        public bool AutoPlay { get; set; } = true;
         private bool isBet { get; set; }
         private bool isLong { get; set; }
         private bool isShort { get; set; }
@@ -146,7 +240,7 @@ namespace BinanceShot.Model
                 OnPropertyChanged("PriceActivateShort");
             }
         }
-        private decimal _Percent { get; set; } = 0.001m;
+        private decimal _Percent { get; set; } = 0.005m;
         public decimal Percent
         {
             get { return _Percent; }
@@ -159,7 +253,7 @@ namespace BinanceShot.Model
                 }
             }
         }
-        private decimal _PercentStopLoss { get; set; } = 0.001m;
+        private decimal _PercentStopLoss { get; set; } = 0.005m;
         public decimal PercentStopLoss
         {
             get { return _PercentStopLoss; }
@@ -172,7 +266,7 @@ namespace BinanceShot.Model
                 }
             }
         }
-        private decimal _PercentTakeProfit { get; set; } = 0.001m;
+        private decimal _PercentTakeProfit { get; set; } = 0.005m;
         public decimal PercentTakeProfit
         {
             get { return _PercentTakeProfit; }
