@@ -354,5 +354,19 @@ namespace BinanceShot.Model
                 OnPropertyChanged("Positive");
             }
         }
+
+        private decimal _Volume { get; set; }
+        public decimal Volume
+        {
+            get { return _Volume; }
+            set
+            {
+                if(_Price > 0m)
+                {
+                    _Volume = Math.Round(value * _Price, 0);
+                    OnPropertyChanged("Volume");
+                }
+            }
+        }
     }
 }

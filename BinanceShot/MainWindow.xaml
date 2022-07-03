@@ -216,6 +216,7 @@
                             <ColumnDefinition Width="200"/>
                             <ColumnDefinition Width="50"/>
                             <ColumnDefinition Width="50"/>
+                            <ColumnDefinition Width="150"/>
                             <ColumnDefinition Width="100"/>
                             <ColumnDefinition Width="80"/>
                             <ColumnDefinition Width="80"/>
@@ -232,15 +233,18 @@
                             <Label Content="Auto" Style="{DynamicResource styleLabel}"/>
                         </Grid>
                         <Grid Grid.Column="3" Style="{DynamicResource styleGridBlack}">
-                            <Label Content="Long/Short/ +" Style="{DynamicResource styleLabel}"/>
+                            <Label Content="Volume" Style="{DynamicResource styleLabel}"/>
                         </Grid>
                         <Grid Grid.Column="4" Style="{DynamicResource styleGridBlack}">
-                            <Label Content="Shot" Style="{DynamicResource styleLabel}"/>
+                            <Label Content="Long/Short/ +" Style="{DynamicResource styleLabel}"/>
                         </Grid>
                         <Grid Grid.Column="5" Style="{DynamicResource styleGridBlack}">
-                            <Label Content="Tp" Style="{DynamicResource styleLabel}"/>
+                            <Label Content="Shot" Style="{DynamicResource styleLabel}"/>
                         </Grid>
                         <Grid Grid.Column="6" Style="{DynamicResource styleGridBlack}">
+                            <Label Content="Tp" Style="{DynamicResource styleLabel}"/>
+                        </Grid>
+                        <Grid Grid.Column="7" Style="{DynamicResource styleGridBlack}">
                             <Label Content="Sl" Style="{DynamicResource styleLabel}"/>
                         </Grid>
                     </Grid>

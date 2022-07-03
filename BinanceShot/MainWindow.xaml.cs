@@ -1,4 +1,5 @@
-﻿using Binance.Net.Objects.Models.Spot;
+﻿using Binance.Net.Enums;
+using Binance.Net.Objects.Models.Spot;
 using BinanceShot.Binance;
 using BinanceShot.ConnectDB;
 using BinanceShot.Errors;

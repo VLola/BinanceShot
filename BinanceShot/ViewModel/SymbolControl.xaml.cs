@@ -1,6 +1,8 @@
-﻿using BinanceShot.Binance;
+﻿using Binance.Net.Enums;
+using BinanceShot.Binance;
 using BinanceShot.Model;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -39,6 +41,7 @@ namespace BinanceShot.ViewModel
                 if (symbol.Start)
                 {
                     SubscribeToAggregatedTradeUpdatesAsync();
+                    SubscribeToTickerUpdatesAsync();
                     timer.Start();
                 }
                 else
@@ -67,6 +70,15 @@ namespace BinanceShot.ViewModel
                     symbol.UpdateTime = Message.Data.TradeTime;
                     symbol.BuyerIsMaker = Message.Data.BuyerIsMaker;
                     symbol.Price = Message.Data.Price;
+                }));
+            }));
+        }
+        public async void SubscribeToTickerUpdatesAsync()
+        {
+            await socket.futuresSocket.SubscribeToTickerUpdatesAsync(symbol.SymbolName, (Message => {
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    symbol.Volume = Message.Data.Volume;
                 }));
             }));
         }

@@ -63,6 +63,7 @@
             <ColumnDefinition Width="200"/>
             <ColumnDefinition Width="50"/>
             <ColumnDefinition Width="50"/>
+            <ColumnDefinition Width="150"/>
             <ColumnDefinition Width="100"/>
             <ColumnDefinition Width="80"/>
             <ColumnDefinition Width="80"/>
@@ -83,6 +84,9 @@
             <CheckBox IsChecked="{Binding Path=symbol.AutoPlay}" Style="{DynamicResource styleCheckBox}"/>
         </Grid>
         <Grid Grid.Column="3" Style="{DynamicResource styleGrid}">
+            <TextBlock Text="{Binding Path=symbol.Volume}" Style="{DynamicResource styleTextBlock}"/>
+        </Grid>
+        <Grid Grid.Column="4" Style="{DynamicResource styleGrid}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
@@ -92,13 +96,13 @@
             <TextBlock Grid.Column="1" Text="{Binding Path=symbol.CountShort}" Style="{DynamicResource styleTextBlock}" Foreground="Red"/>
             <TextBlock Grid.Column="2" Text="{Binding Path=symbol.Positive}" Style="{DynamicResource styleTextBlock}" Foreground="Orange"/>
         </Grid>
-        <Grid Grid.Column="4" Style="{DynamicResource styleGrid}">
+        <Grid Grid.Column="5" Style="{DynamicResource styleGrid}">
             <TextBox Text="{Binding Path=symbol.Percent}" Style="{DynamicResource styleTextBox}"/>
         </Grid>
-        <Grid Grid.Column="5" Style="{DynamicResource styleGrid}">
+        <Grid Grid.Column="6" Style="{DynamicResource styleGrid}">
             <TextBox Text="{Binding Path=symbol.PercentTakeProfit}" Style="{DynamicResource styleTextBox}"/>
         </Grid>
-        <Grid Grid.Column="6" Style="{DynamicResource styleGrid}">
+        <Grid Grid.Column="7" Style="{DynamicResource styleGrid}">
             <TextBox Text="{Binding Path=symbol.PercentStopLoss}" Style="{DynamicResource styleTextBox}"/>
         </Grid>
     </Grid>
