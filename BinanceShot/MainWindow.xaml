@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BinanceShot" xmlns:UserControl="clr-namespace:BinanceShot.ViewModel"
         mc:Ignorable="d"
-        Title="MainWindow" Height="800" Width="1200">
+        Title="MainWindow" Height="800" Width="1400">
     <Window.Resources>
         <Style x:Key="styleStackPanel" TargetType="StackPanel">
             <Setter Property="Background" Value="Black" />
@@ -171,7 +171,28 @@
                             <CheckBox Content="Start All:" Click="SellectAll_Click" Style="{DynamicResource styleCheckBox}"/>
                         </Grid>
                         <Grid Grid.Column="1" Grid.Row="0" Style="{DynamicResource styleGridBlack}">
-                            <CheckBox Content="Autoplay:" IsChecked="{Binding Path=Variables.AutoPlay}" Click="AutoPlay_Click" Style="{DynamicResource styleCheckBox}"/>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="Shot" Style="{DynamicResource styleLabel}"/>
+                            <TextBox Grid.Column="1" Text="{Binding Path=Variables.Percent, UpdateSourceTrigger=PropertyChanged}" TextChanged="Percent_TextChanged" Style="{DynamicResource styleTextBox}"/>
+                        </Grid>
+                        <Grid Grid.Column="1" Grid.Row="1" Style="{DynamicResource styleGridBlack}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="Take Profit" Style="{DynamicResource styleLabel}"/>
+                            <TextBox Grid.Column="1" Text="{Binding Path=Variables.PercentTakeProfit, UpdateSourceTrigger=PropertyChanged}" TextChanged="PercentTakeProfit_TextChanged" Style="{DynamicResource styleTextBox}"/>
+                        </Grid>
+                        <Grid Grid.Column="1" Grid.Row="2" Style="{DynamicResource styleGridBlack}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="Stop Loss" Style="{DynamicResource styleLabel}"/>
+                            <TextBox Grid.Column="1" Text="{Binding Path=Variables.PercentStopLoss, UpdateSourceTrigger=PropertyChanged}" TextChanged="PercentStopLoss_TextChanged" Style="{DynamicResource styleTextBox}"/>
                         </Grid>
                     </Grid>
                 </Grid>
@@ -182,7 +203,7 @@
             </DockPanel>
             <Grid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <Grid Grid.Column="0">
@@ -194,14 +215,12 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="200"/>
                             <ColumnDefinition Width="50"/>
+                            <ColumnDefinition Width="50"/>
                             <ColumnDefinition Width="100"/>
-                            <ColumnDefinition Width="100"/>
                             <ColumnDefinition Width="80"/>
                             <ColumnDefinition Width="80"/>
                             <ColumnDefinition Width="80"/>
-                            <ColumnDefinition Width="80"/>
-                            <ColumnDefinition Width="80"/>
-                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="20"/>
                         </Grid.ColumnDefinitions>
                         <Grid Grid.Column="0" Style="{DynamicResource styleGridBlack}">
                             <Label Content="Symbol" Style="{DynamicResource styleLabel}"/>
@@ -210,13 +229,19 @@
                             <Label Content="Start" Style="{DynamicResource styleLabel}"/>
                         </Grid>
                         <Grid Grid.Column="2" Style="{DynamicResource styleGridBlack}">
-                            <Label Content="Long" Style="{DynamicResource styleLabel}"/>
+                            <Label Content="Auto" Style="{DynamicResource styleLabel}"/>
                         </Grid>
                         <Grid Grid.Column="3" Style="{DynamicResource styleGridBlack}">
-                            <Label Content="Short" Style="{DynamicResource styleLabel}"/>
+                            <Label Content="Long/Short/ +" Style="{DynamicResource styleLabel}"/>
                         </Grid>
                         <Grid Grid.Column="4" Style="{DynamicResource styleGridBlack}">
-                            <Label Content="Positive" Style="{DynamicResource styleLabel}"/>
+                            <Label Content="Shot" Style="{DynamicResource styleLabel}"/>
+                        </Grid>
+                        <Grid Grid.Column="5" Style="{DynamicResource styleGridBlack}">
+                            <Label Content="Tp" Style="{DynamicResource styleLabel}"/>
+                        </Grid>
+                        <Grid Grid.Column="6" Style="{DynamicResource styleGridBlack}">
+                            <Label Content="Sl" Style="{DynamicResource styleLabel}"/>
                         </Grid>
                     </Grid>
                     <ScrollViewer Grid.Row="1">

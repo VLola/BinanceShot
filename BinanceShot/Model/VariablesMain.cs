@@ -10,14 +10,43 @@ namespace BinanceShot.Model
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
-        private bool _AutoPlay { get; set; }
-        public bool AutoPlay
+        private decimal _Percent { get; set; } = 0.5m;
+        public decimal Percent
         {
-            get { return _AutoPlay; }
+            get { return _Percent; }
             set
             {
-                _AutoPlay = value;
-                OnPropertyChanged("AutoPlay");
+                if (value != 0m)
+                {
+                    _Percent = value;
+                    OnPropertyChanged("Percent");
+                }
+            }
+        }
+        private decimal _PercentStopLoss { get; set; } = 0.45m;
+        public decimal PercentStopLoss
+        {
+            get { return _PercentStopLoss; }
+            set
+            {
+                if (value != 0m)
+                {
+                    _PercentStopLoss = value;
+                    OnPropertyChanged("PercentStopLoss");
+                }
+            }
+        }
+        private decimal _PercentTakeProfit { get; set; } = 0.15m;
+        public decimal PercentTakeProfit
+        {
+            get { return _PercentTakeProfit; }
+            set
+            {
+                if (value != 0m)
+                {
+                    _PercentTakeProfit = value;
+                    OnPropertyChanged("PercentTakeProfit");
+                }
             }
         }
     }

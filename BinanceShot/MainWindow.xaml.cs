@@ -47,7 +47,37 @@ namespace BinanceShot
             Chart();
             this.DataContext = this;
         }
-        public SymbolControl SelectedSymbolControl;
+
+        private void Percent_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (Variables.Percent > 0m)
+            {
+                foreach (SymbolControl it in Symbols.Children)
+                {
+                    it.symbol.Percent = Variables.Percent;
+                }
+            }
+        }
+        private void PercentTakeProfit_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (Variables.PercentTakeProfit > 0m)
+            {
+                foreach (SymbolControl it in Symbols.Children)
+                {
+                    it.symbol.PercentTakeProfit = Variables.PercentTakeProfit;
+                }
+            }
+        }
+        private void PercentStopLoss_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (Variables.PercentStopLoss > 0m)
+            {
+                foreach (SymbolControl it in Symbols.Children)
+                {
+                    it.symbol.PercentStopLoss = Variables.PercentStopLoss;
+                }
+            }
+        }
         private void DetailSymbol_Click(object sender, RoutedEventArgs e)
         {
             Button button = (Button)sender;
@@ -61,7 +91,6 @@ namespace BinanceShot
                 if (it.symbol.SymbolName == name)
                 {
                     it.symbol.Select = true;
-                    Variables.AutoPlay = it.symbol.AutoPlay;
                 }
             }
         }
@@ -81,13 +110,6 @@ namespace BinanceShot
                 {
                     if (it.symbol.Start) it.symbol.Start = false;
                 }
-            }
-        }
-        private void AutoPlay_Click(object sender, RoutedEventArgs e)
-        {
-            foreach (SymbolControl it in Symbols.Children)
-            {
-                if (it.symbol.Select) it.symbol.AutoPlay = Variables.AutoPlay;
             }
         }
         #region - List Sumbols -

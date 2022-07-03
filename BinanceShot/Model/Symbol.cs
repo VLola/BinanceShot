@@ -25,10 +25,6 @@ namespace BinanceShot.Model
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
-        public List<HistoryTrade> PricesBuy = new List<HistoryTrade>();
-        public List<HistoryTrade> PricesSell = new List<HistoryTrade>();
-        public List<HistoryTrade> TradesLong = new List<HistoryTrade>();
-        public List<HistoryTrade> TradesShort = new List<HistoryTrade>();
         private string _SymbolName { get; set; }
         public string SymbolName
         {
@@ -115,7 +111,6 @@ namespace BinanceShot.Model
                     isShort = true;
                     price_open_short_order_x.Add(_UpdateTime.ToOADate());
                     price_open_short_order_y.Add(Double.Parse(value.ToString()));
-                    //TradesShort.Add(new HistoryTrade(value, _UpdateTime, true));
                 }
                 else if (!isBet && value <= _PriceActivateLong && _PriceActivateLong > 0m)
                 {
@@ -124,7 +119,6 @@ namespace BinanceShot.Model
                     isLong = true;
                     price_open_long_order_x.Add(_UpdateTime.ToOADate());
                     price_open_long_order_y.Add(Double.Parse(value.ToString()));
-                    //TradesLong.Add(new HistoryTrade(value, _UpdateTime, true));
                 }
                 else if (isBet && isLong && value >= PriceTakeProfitLong)
                 {
@@ -133,7 +127,6 @@ namespace BinanceShot.Model
                     Positive = _Positive + 1;
                     price_close_order_x.Add(_UpdateTime.ToOADate());
                     price_close_order_y.Add(Double.Parse(value.ToString()));
-                    //TradesLong.Add(new HistoryTrade(value, _UpdateTime));
                 }
                 else if (isBet && isLong && value <= PriceStopLossLong)
                 {
@@ -141,7 +134,6 @@ namespace BinanceShot.Model
                     isBet = false;
                     price_close_order_x.Add(_UpdateTime.ToOADate());
                     price_close_order_y.Add(Double.Parse(value.ToString()));
-                    //TradesLong.Add(new HistoryTrade(value, _UpdateTime));
                 }
                 else if (isBet && isShort && value <= PriceTakeProfitShort)
                 {
@@ -150,7 +142,6 @@ namespace BinanceShot.Model
                     Positive = _Positive + 1;
                     price_close_order_x.Add(_UpdateTime.ToOADate());
                     price_close_order_y.Add(Double.Parse(value.ToString()));
-                    //TradesShort.Add(new HistoryTrade(value, _UpdateTime));
                 }
                 else if (isBet && isShort && value >= PriceStopLossShort)
                 {
@@ -158,7 +149,6 @@ namespace BinanceShot.Model
                     isBet = false;
                     price_close_order_x.Add(_UpdateTime.ToOADate());
                     price_close_order_y.Add(Double.Parse(value.ToString()));
-                    //TradesShort.Add(new HistoryTrade(value, _UpdateTime));
                 }
                 // Chart
                 
@@ -194,12 +184,21 @@ namespace BinanceShot.Model
                         close_order = plt.Plot.AddScatter(price_close_order_x.ToArray(), price_close_order_y.ToArray(), color: Color.Red, lineWidth: 0, markerSize: 10, markerShape: ScottPlot.MarkerShape.eks);
                         close_order.YAxisIndex = 1;
                     }
-                    if(AutoPlay) plt.Plot.SetAxisLimits(xMin: _UpdateTime.AddMinutes(-1).ToOADate(), xMax: _UpdateTime.AddSeconds(10).ToOADate(), yAxisIndex: 1);
+                    if(_AutoPlay) plt.Plot.SetAxisLimits(xMin: _UpdateTime.AddMinutes(-1).ToOADate(), xMax: _UpdateTime.AddSeconds(10).ToOADate(), yAxisIndex: 1);
                     plt.Render();
                 }
             }
         }
-        public bool AutoPlay { get; set; } = true;
+        public bool _AutoPlay { get; set; } = true;
+        public bool AutoPlay
+        {
+            get { return _AutoPlay; }
+            set
+            {
+                _AutoPlay = value;
+                OnPropertyChanged("AutoPlay");
+            }
+        }
         private bool isBet { get; set; }
         private bool isLong { get; set; }
         private bool isShort { get; set; }
@@ -211,14 +210,14 @@ namespace BinanceShot.Model
             {
                 _PastPrice = value;
                 OnPropertyChanged("PastPrice");
-                PriceActivateLong = (value - (value * _Percent));
-                PriceActivateShort = (value + (value * _Percent));
+                PriceActivateLong = (value - (value * _Percent * 0.01m));
+                PriceActivateShort = (value + (value * _Percent * 0.01m));
                 if (!isBet)
                 {
-                    PriceStopLossLong = (_PriceActivateLong - (PriceActivateLong * _PercentStopLoss));
-                    PriceTakeProfitLong = (_PriceActivateLong + (PriceActivateLong * _PercentTakeProfit));
-                    PriceStopLossShort = (_PriceActivateShort + (_PriceActivateShort * _PercentStopLoss));
-                    PriceTakeProfitShort = (_PriceActivateShort - (_PriceActivateShort * _PercentTakeProfit));
+                    PriceStopLossLong = (_PriceActivateLong - (PriceActivateLong * _PercentStopLoss * 0.01m));
+                    PriceTakeProfitLong = (_PriceActivateLong + (PriceActivateLong * _PercentTakeProfit * 0.01m));
+                    PriceStopLossShort = (_PriceActivateShort + (_PriceActivateShort * _PercentStopLoss * 0.01m));
+                    PriceTakeProfitShort = (_PriceActivateShort - (_PriceActivateShort * _PercentTakeProfit * 0.01m));
                 }
             }
         }
@@ -230,7 +229,6 @@ namespace BinanceShot.Model
             {
                 _PriceActivateLong = value;
                 OnPropertyChanged("PriceActivateLong");
-
             }
         }
         private decimal _PriceActivateShort { get; set; }
@@ -243,7 +241,7 @@ namespace BinanceShot.Model
                 OnPropertyChanged("PriceActivateShort");
             }
         }
-        private decimal _Percent { get; set; } = 0.005m;
+        private decimal _Percent { get; set; } = 0.5m;
         public decimal Percent
         {
             get { return _Percent; }
@@ -256,7 +254,7 @@ namespace BinanceShot.Model
                 }
             }
         }
-        private decimal _PercentStopLoss { get; set; } = 0.0045m;
+        private decimal _PercentStopLoss { get; set; } = 0.45m;
         public decimal PercentStopLoss
         {
             get { return _PercentStopLoss; }
@@ -269,7 +267,7 @@ namespace BinanceShot.Model
                 }
             }
         }
-        private decimal _PercentTakeProfit { get; set; } = 0.0015m;
+        private decimal _PercentTakeProfit { get; set; } = 0.15m;
         public decimal PercentTakeProfit
         {
             get { return _PercentTakeProfit; }
@@ -355,18 +353,6 @@ namespace BinanceShot.Model
                 _Positive = value;
                 OnPropertyChanged("Positive");
             }
-        }
-    }
-    public class HistoryTrade
-    {
-        public decimal Price { get; set; }
-        public DateTime UpdateTime { get; set; }
-        public bool isBuy { get; set; }
-        public HistoryTrade(decimal Price, DateTime UpdateTime, bool? isBuy = false)
-        {
-            this.Price = Price;
-            this.UpdateTime = UpdateTime;
-            this.isBuy = (bool)isBuy;
         }
     }
 }
