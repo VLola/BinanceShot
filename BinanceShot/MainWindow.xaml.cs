@@ -1,4 +1,5 @@
 ﻿using Binance.Net.Enums;
+using Binance.Net.Objects.Models.Futures;
 using Binance.Net.Objects.Models.Spot;
 using BinanceShot.Binance;
 using BinanceShot.ConnectDB;
@@ -37,9 +38,19 @@ namespace BinanceShot
         public string API_KEY { get; set; } = "";
         public string SECRET_KEY { get; set; } = "";
         public string CLIENT_NAME { get; set; } = "";
-        public List<string> list_sumbols_name = new List<string>();
+        public List<SymbolName> list_sumbols_name = new List<SymbolName>();
         public Socket socket;
         public ScatterPlot prices_plot;
+        public class SymbolName
+        {
+            public string Symbol { get; set; }
+            public decimal StepSize { get; set; }
+            public SymbolName(string Symbol, decimal StepSize)
+            {
+                this.Symbol = Symbol;
+                this.StepSize = StepSize;
+            }
+        }
         public MainWindow()
         {
             InitializeComponent();
@@ -116,16 +127,11 @@ namespace BinanceShot
         #region - List Sumbols -
         private void GetSumbolName()
         {
-            foreach (var it in ListSymbols())
-            {
-                list_sumbols_name.Add(it.Symbol);
-            }
-            list_sumbols_name.Sort();
             int i = 0;
-            foreach (var it in list_sumbols_name)
+            foreach (var it in ListSymbols().OrderBy(q => q.Name).ToList())
             {
                 Symbols.RowDefinitions.Add(new RowDefinition());
-                SymbolControl control = new SymbolControl(it, plt);
+                SymbolControl control = new SymbolControl(it.Name, it.LotSizeFilter.StepSize, it.LotSizeFilter.MinQuantity, plt);
                 control.DetailSymbol.Click += DetailSymbol_Click;
                 Grid.SetRow(control, i);
                 Symbols.Children.Add(control);
@@ -133,14 +139,13 @@ namespace BinanceShot
             }
         }
 
-
-        public List<BinancePrice> ListSymbols()
+        public List<BinanceFuturesUsdtSymbol> ListSymbols()
         {
             try
             {
-                var result = socket.futures.ExchangeData.GetPricesAsync().Result;
-                if (!result.Success) ErrorText.Add("Error GetKlinesAsync");
-                return result.Data.ToList();
+                var result = socket.futures.ExchangeData.GetExchangeInfoAsync().Result;
+                if (!result.Success) ErrorText.Add("Error ListSymbols");
+                return result.Data.Symbols.ToList();
             }
             catch (Exception e)
             {
@@ -148,7 +153,6 @@ namespace BinanceShot
                 return ListSymbols();
             }
         }
-
         #endregion
 
         #region - Login -

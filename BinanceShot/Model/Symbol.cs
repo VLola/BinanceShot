@@ -106,49 +106,55 @@ namespace BinanceShot.Model
                 }
                 if (!isBet && value >= _PriceActivateShort && _PriceActivateShort > 0m)
                 {
-                    CountShort = _CountShort + 1;
+                    // Open
                     isBet = true;
                     isShort = true;
+                    CountShort = _CountShort + 1;
                     price_open_short_order_x.Add(_UpdateTime.ToOADate());
                     price_open_short_order_y.Add(Double.Parse(value.ToString()));
                 }
                 else if (!isBet && value <= _PriceActivateLong && _PriceActivateLong > 0m)
                 {
-                    CountLong = _CountLong + 1;
+                    // Open
                     isBet = true;
                     isLong = true;
+                    CountLong = _CountLong + 1;
                     price_open_long_order_x.Add(_UpdateTime.ToOADate());
                     price_open_long_order_y.Add(Double.Parse(value.ToString()));
                 }
                 else if (isBet && isLong && value >= PriceTakeProfitLong)
                 {
-                    isLong = false;
-                    isBet = false;
                     Positive = _Positive + 1;
                     price_close_order_x.Add(_UpdateTime.ToOADate());
                     price_close_order_y.Add(Double.Parse(value.ToString()));
+                    // Close
+                    isLong = false;
+                    isBet = false;
                 }
                 else if (isBet && isLong && value <= PriceStopLossLong)
                 {
-                    isLong = false;
-                    isBet = false;
                     price_close_order_x.Add(_UpdateTime.ToOADate());
                     price_close_order_y.Add(Double.Parse(value.ToString()));
+                    // Close
+                    isLong = false;
+                    isBet = false;
                 }
                 else if (isBet && isShort && value <= PriceTakeProfitShort)
                 {
-                    isShort = false;
-                    isBet = false;
                     Positive = _Positive + 1;
                     price_close_order_x.Add(_UpdateTime.ToOADate());
                     price_close_order_y.Add(Double.Parse(value.ToString()));
+                    // Close
+                    isShort = false;
+                    isBet = false;
                 }
                 else if (isBet && isShort && value >= PriceStopLossShort)
                 {
-                    isShort = false;
-                    isBet = false;
                     price_close_order_x.Add(_UpdateTime.ToOADate());
                     price_close_order_y.Add(Double.Parse(value.ToString()));
+                    // Close
+                    isShort = false;
+                    isBet = false;
                 }
                 // Chart
                 
@@ -199,7 +205,16 @@ namespace BinanceShot.Model
                 OnPropertyChanged("AutoPlay");
             }
         }
-        private bool isBet { get; set; }
+        private bool _isBet { get; set; }
+        public bool isBet
+        {
+            get { return _isBet; }
+            set
+            {
+                _isBet = value;
+                OnPropertyChanged("isBet");
+            }
+        }
         private bool isLong { get; set; }
         private bool isShort { get; set; }
         private decimal _PastPrice { get; set; }
@@ -354,19 +369,85 @@ namespace BinanceShot.Model
                 OnPropertyChanged("Positive");
             }
         }
-
         private decimal _Volume { get; set; }
         public decimal Volume
         {
             get { return _Volume; }
             set
             {
-                if(_Price > 0m)
+                if (_Price > 0m)
                 {
                     _Volume = Math.Round(value * _Price, 0);
                     OnPropertyChanged("Volume");
                 }
             }
+        }
+        private decimal _Quantity { get; set; }
+        public decimal Quantity
+        {
+            get { return _Quantity; }
+            set
+            {
+                if (RoundQuantity(value) > _MinQuantity) {
+                    _Quantity = RoundQuantity(value);
+                    OnPropertyChanged("Quantity");
+                }
+            }
+        }
+        private decimal _USDT { get; set; } = 5.1m;
+        public decimal USDT
+        {
+            get { return _USDT; }
+            set
+            {
+                if (value >= _MIN_USDT) {
+                    _USDT = value;
+                    OnPropertyChanged("USDT");
+                    Quantity = RoundQuantity(value / _Price);
+                }
+            }
+        }
+        private decimal _MIN_USDT { get; set; } = 5.1m;
+        public decimal MIN_USDT
+        {
+            get { return _MIN_USDT; }
+            set
+            {
+                if(value >= 5.1m) {
+                    _MIN_USDT = value;
+                    OnPropertyChanged("MIN_USDT");
+                }
+            }
+        }
+        private decimal _StepSize { get; set; }
+        public decimal StepSize
+        {
+            get { return _StepSize; }
+            set
+            {
+                _StepSize = value;
+                OnPropertyChanged("StepSize");
+            }
+        }
+        private decimal _MinQuantity { get; set; }
+        public decimal MinQuantity
+        {
+            get { return _MinQuantity; }
+            set
+            {
+                _MinQuantity = value;
+                OnPropertyChanged("MinQuantity");
+                Quantity = value + _StepSize;
+            }
+        }
+        private decimal RoundQuantity(decimal quantity)
+        {
+            decimal quantity_final = 0m;
+            if (_StepSize == 0.001m) quantity_final = Math.Round(quantity, 3);
+            else if (_StepSize == 0.01m) quantity_final = Math.Round(quantity, 2);
+            else if (_StepSize == 0.1m) quantity_final = Math.Round(quantity, 1);
+            else if (_StepSize == 1m) quantity_final = Math.Round(quantity, 0);
+            return quantity_final;
         }
     }
 }

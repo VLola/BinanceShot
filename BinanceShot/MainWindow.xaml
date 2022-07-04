@@ -221,6 +221,7 @@
                             <ColumnDefinition Width="80"/>
                             <ColumnDefinition Width="80"/>
                             <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="80"/>
                             <ColumnDefinition Width="20"/>
                         </Grid.ColumnDefinitions>
                         <Grid Grid.Column="0" Style="{DynamicResource styleGridBlack}">
@@ -246,6 +247,9 @@
                         </Grid>
                         <Grid Grid.Column="7" Style="{DynamicResource styleGridBlack}">
                             <Label Content="Sl" Style="{DynamicResource styleLabel}"/>
+                        </Grid>
+                        <Grid Grid.Column="8" Style="{DynamicResource styleGridBlack}">
+                            <Label Content="USDT" Style="{DynamicResource styleLabel}"/>
                         </Grid>
                     </Grid>
                     <ScrollViewer Grid.Row="1">

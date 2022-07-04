@@ -68,6 +68,7 @@
             <ColumnDefinition Width="80"/>
             <ColumnDefinition Width="80"/>
             <ColumnDefinition Width="80"/>
+            <ColumnDefinition Width="80"/>
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="0" Style="{DynamicResource styleGrid}">
             <Grid.ColumnDefinitions>
@@ -104,6 +105,9 @@
         </Grid>
         <Grid Grid.Column="7" Style="{DynamicResource styleGrid}">
             <TextBox Text="{Binding Path=symbol.PercentStopLoss}" Style="{DynamicResource styleTextBox}"/>
+        </Grid>
+        <Grid Grid.Column="8" Style="{DynamicResource styleGrid}">
+            <TextBox Text="{Binding Path=symbol.USDT}" ToolTip="{Binding Path=symbol.MIN_USDT}" IsEnabled="{Binding Path=!symbol.isBet}" Style="{DynamicResource styleTextBox}"/>
         </Grid>
     </Grid>
 </UserControl>

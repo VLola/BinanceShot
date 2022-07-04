@@ -18,12 +18,14 @@ namespace BinanceShot.ViewModel
         public DispatcherTimer timer = new DispatcherTimer();
         public Symbol symbol { get; set; } 
         public Socket socket { get; set; } = new Socket("Si5U4TSmpX4ByMDQEiWu9aGnHaX7o66Hw1erDl5tsfOKw1sjXTpUrP0JhonXrGJR", "ddKGxVke1y7Y0WRMBeuMeKAfqNdU7aBC8eOeHXHMY6CqYGzl0MPfuM60UkX7Dnoa");
-        public SymbolControl(string symbol_name, ScottPlot.WpfPlot plt)
+        public SymbolControl(string symbol_name, decimal step_size, decimal min_quantity, ScottPlot.WpfPlot plt)
         {
             InitializeComponent();
             this.DataContext = this;
             symbol = new Symbol(plt);
             symbol.SymbolName = symbol_name;
+            symbol.StepSize = step_size;
+            symbol.MinQuantity = min_quantity;
             symbol.PropertyChanged += Symbol_PropertyChanged;
             timer.Interval = TimeSpan.FromMilliseconds(1000);
             timer.Tick += Timer_Tick;
