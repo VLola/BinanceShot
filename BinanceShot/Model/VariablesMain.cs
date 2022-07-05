@@ -63,5 +63,15 @@ namespace BinanceShot.Model
                 }
             }
         }
+        private string _Symbol { get; set; }
+        public string Symbol
+        {
+            get { return _Symbol; }
+            set
+            {
+                _Symbol = value;
+                OnPropertyChanged("Symbol");
+            }
+        }
     }
 }

@@ -178,6 +178,15 @@
                             <Label Grid.Column="0" Content="USDT" Style="{DynamicResource styleLabel}"/>
                             <TextBox Grid.Column="1" Text="{Binding Path=Variables.USDT, UpdateSourceTrigger=PropertyChanged}" TextChanged="USDT_TextChanged" Style="{DynamicResource styleTextBox}"/>
                         </Grid>
+
+                        <Grid Grid.Column="0" Grid.Row="2" Style="{DynamicResource styleGridBlack}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="Symbol" Style="{DynamicResource styleLabel}"/>
+                            <TextBlock Grid.Column="1" Text="{Binding Path=Variables.Symbol}" Style="{DynamicResource styleTextBlock}"/>
+                        </Grid>
                         <Grid Grid.Column="1" Grid.Row="0" Style="{DynamicResource styleGridBlack}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>

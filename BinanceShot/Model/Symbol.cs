@@ -10,6 +10,16 @@ namespace BinanceShot.Model
 {
     public class Symbol : INotifyPropertyChanged
     {
+        public List<double> price_buy_x = new List<double>();
+        public List<double> price_buy_y = new List<double>();
+        public List<double> price_sell_x = new List<double>();
+        public List<double> price_sell_y = new List<double>();
+        public List<double> price_open_long_order_x = new List<double>();
+        public List<double> price_open_long_order_y = new List<double>();
+        public List<double> price_open_short_order_x = new List<double>();
+        public List<double> price_open_short_order_y = new List<double>();
+        public List<double> price_close_order_x = new List<double>();
+        public List<double> price_close_order_y = new List<double>();
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] string prop = "")
         {
@@ -109,14 +119,26 @@ namespace BinanceShot.Model
                 _Price = value;
                 PriceDouble = Double.Parse(value.ToString());
                 UpdateTimeDouble = UpdateTime.ToOADate();
+                if (!BuyerIsMaker)
+                {
+                    price_buy_x.Add(UpdateTimeDouble);
+                    price_buy_y.Add(PriceDouble);
+                }
+                else
+                {
+                    price_sell_x.Add(UpdateTimeDouble);
+                    price_sell_y.Add(PriceDouble);
+                }
                 if (!isBet && value >= _PriceActivateShort && _PriceActivateShort > 0m)
                 {
                     // Open
                     isBet = true;
                     isShort = true;
                     CountShort = _CountShort + 1;
-                    TimeOpenShortOrder = _UpdateTime.ToOADate();
-                    PriceOpenShortOrder = Double.Parse(value.ToString());
+                    TimeOpenShortOrder = UpdateTimeDouble;
+                    PriceOpenShortOrder = PriceDouble;
+                    price_open_short_order_x.Add(UpdateTimeDouble);
+                    price_open_short_order_y.Add(PriceDouble);
                 }
                 else if (!isBet && value <= _PriceActivateLong && _PriceActivateLong > 0m)
                 {
@@ -124,22 +146,28 @@ namespace BinanceShot.Model
                     isBet = true;
                     isLong = true;
                     CountLong = _CountLong + 1;
-                    TimeOpenLongOrder = _UpdateTime.ToOADate();
-                    PriceOpenLongOrder = Double.Parse(value.ToString());
+                    TimeOpenLongOrder = UpdateTimeDouble;
+                    PriceOpenLongOrder = PriceDouble;
+                    price_open_long_order_x.Add(UpdateTimeDouble);
+                    price_open_long_order_y.Add(PriceDouble);
                 }
                 else if (isBet && isLong && value >= PriceTakeProfitLong)
                 {
                     Positive = _Positive + 1;
-                    TimeCloseOrder = _UpdateTime.ToOADate();
-                    PriceCloseOrder = Double.Parse(value.ToString());
+                    TimeCloseOrder = UpdateTimeDouble;
+                    PriceCloseOrder = PriceDouble;
+                    price_close_order_x.Add(UpdateTimeDouble);
+                    price_close_order_y.Add(PriceDouble);
                     // Close
                     isLong = false;
                     isBet = false;
                 }
                 else if (isBet && isLong && value <= PriceStopLossLong)
                 {
-                    TimeCloseOrder = _UpdateTime.ToOADate();
-                    PriceCloseOrder = Double.Parse(value.ToString());
+                    TimeCloseOrder = UpdateTimeDouble;
+                    PriceCloseOrder = PriceDouble;
+                    price_close_order_x.Add(UpdateTimeDouble);
+                    price_close_order_y.Add(PriceDouble);
                     // Close
                     isLong = false;
                     isBet = false;
@@ -147,16 +175,20 @@ namespace BinanceShot.Model
                 else if (isBet && isShort && value <= PriceTakeProfitShort)
                 {
                     Positive = _Positive + 1;
-                    TimeCloseOrder = _UpdateTime.ToOADate();
-                    PriceCloseOrder = Double.Parse(value.ToString());
+                    TimeCloseOrder = UpdateTimeDouble;
+                    PriceCloseOrder = PriceDouble;
+                    price_close_order_x.Add(UpdateTimeDouble);
+                    price_close_order_y.Add(PriceDouble);
                     // Close
                     isShort = false;
                     isBet = false;
                 }
                 else if (isBet && isShort && value >= PriceStopLossShort)
                 {
-                    TimeCloseOrder = _UpdateTime.ToOADate();
-                    PriceCloseOrder = Double.Parse(value.ToString());
+                    TimeCloseOrder = UpdateTimeDouble;
+                    PriceCloseOrder = PriceDouble;
+                    price_close_order_x.Add(UpdateTimeDouble);
+                    price_close_order_y.Add(PriceDouble);
                     // Close
                     isShort = false;
                     isBet = false;

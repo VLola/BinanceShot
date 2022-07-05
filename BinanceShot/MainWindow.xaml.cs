@@ -103,13 +103,15 @@ namespace BinanceShot
             string name = (string)button.Content;
             foreach (SymbolControl it in Symbols.Children)
             {
-                it.symbol.Select = false;
+                if(it.symbol.Select) it.symbol.Select = false;
             }
             foreach (SymbolControl it in Symbols.Children)
             {
                 if (it.symbol.SymbolName == name)
                 {
+                    Variables.Symbol = it.symbol.SymbolName;
                     it.symbol.Select = true;
+                    break;
                 }
             }
         }
