@@ -29,9 +29,6 @@ using Color = System.Drawing.Color;
 
 namespace BinanceShot
 {
-    /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         public VariablesMain Variables { get; set; } = new VariablesMain();
@@ -43,12 +40,12 @@ namespace BinanceShot
         public ScatterPlot prices_plot;
         public class SymbolName
         {
-            public string Symbol { get; set; }
-            public decimal StepSize { get; set; }
-            public SymbolName(string Symbol, decimal StepSize)
+            public decimal Price { get; set; }
+            public BinanceFuturesUsdtSymbol BFUS { get; set; }
+            public SymbolName(decimal Price, BinanceFuturesUsdtSymbol BFUS)
             {
-                this.Symbol = Symbol;
-                this.StepSize = StepSize;
+                this.Price = Price;
+                this.BFUS = BFUS;
             }
         }
         public MainWindow()
@@ -60,6 +57,16 @@ namespace BinanceShot
             this.DataContext = this;
         }
 
+        private void USDT_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (Variables.USDT > 5.1m)
+            {
+                foreach (SymbolControl it in Symbols.Children)
+                {
+                    it.symbol.USDT = Variables.USDT;
+                }
+            }
+        }
         private void Percent_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (Variables.Percent > 0m)
@@ -127,11 +134,17 @@ namespace BinanceShot
         #region - List Sumbols -
         private void GetSumbolName()
         {
-            int i = 0;
+            List<BinancePrice> list = ListPriceSymbols();
             foreach (var it in ListSymbols().OrderBy(q => q.Name).ToList())
             {
+                foreach (var item in list) if (item.Symbol == it.Name) list_sumbols_name.Add(new SymbolName(item.Price, it));
+            }
+
+            int i = 0;
+            foreach (var it in list_sumbols_name)
+            {
                 Symbols.RowDefinitions.Add(new RowDefinition());
-                SymbolControl control = new SymbolControl(it.Name, it.LotSizeFilter.StepSize, it.LotSizeFilter.MinQuantity, plt);
+                SymbolControl control = new SymbolControl(it.BFUS.Name, it.BFUS.LotSizeFilter.StepSize, it.BFUS.LotSizeFilter.MinQuantity, it.Price, plt);
                 control.DetailSymbol.Click += DetailSymbol_Click;
                 Grid.SetRow(control, i);
                 Symbols.Children.Add(control);
@@ -151,6 +164,20 @@ namespace BinanceShot
             {
                 ErrorText.Add($"ListSymbols {e.Message}");
                 return ListSymbols();
+            }
+        }
+        public List<BinancePrice> ListPriceSymbols()
+        {
+            try
+            {
+                var result = socket.futures.ExchangeData.GetPricesAsync().Result;
+                if (!result.Success) ErrorText.Add("Error ListPriceSymbols GetPricesAsync");
+                return result.Data.ToList();
+            }
+            catch (Exception e)
+            {
+                ErrorText.Add($"ListPriceSymbols {e.Message}");
+                return ListPriceSymbols();
             }
         }
         #endregion

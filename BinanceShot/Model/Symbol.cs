@@ -10,16 +10,6 @@ namespace BinanceShot.Model
 {
     public class Symbol : INotifyPropertyChanged
     {
-        public ScatterPlot long_price;
-        public ScatterPlot short_price;
-        public ScatterPlot long_open_order;
-        public ScatterPlot short_open_order;
-        public ScatterPlot close_order;
-        public ScottPlot.WpfPlot plt;
-        public Symbol(ScottPlot.WpfPlot plt)
-        {
-            this.plt = plt;
-        }
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] string prop = "")
         {
@@ -55,7 +45,7 @@ namespace BinanceShot.Model
                 OnPropertyChanged("Start");
             }
         }
-        private bool _BuyerIsMaker { get; set; }
+        private bool _BuyerIsMaker { get; set; } = false;
         public bool BuyerIsMaker
         {
             get { return _BuyerIsMaker; }
@@ -65,7 +55,7 @@ namespace BinanceShot.Model
                 OnPropertyChanged("BuyerIsMaker");
             }
         }
-        private bool _Select { get; set; }
+        private bool _Select { get; set; } = false;
         public bool Select
         {
             get { return _Select; }
@@ -73,19 +63,18 @@ namespace BinanceShot.Model
             {
                 _Select = value;
                 OnPropertyChanged("Select");
-                if (value) plt.Plot.Clear();
             }
         }
-        List<double> price_buy_x = new List<double>();
-        List<double> price_buy_y = new List<double>();
-        List<double> price_sell_x = new List<double>();
-        List<double> price_sell_y = new List<double>();
-        List<double> price_open_long_order_x = new List<double>();
-        List<double> price_open_long_order_y = new List<double>();
-        List<double> price_open_short_order_x = new List<double>();
-        List<double> price_open_short_order_y = new List<double>();
-        List<double> price_close_order_x = new List<double>();
-        List<double> price_close_order_y = new List<double>();
+        public List<double> price_buy_x = new List<double>();
+        public List<double> price_buy_y = new List<double>();
+        public List<double> price_sell_x = new List<double>();
+        public List<double> price_sell_y = new List<double>();
+        public List<double> price_open_long_order_x = new List<double>();
+        public List<double> price_open_long_order_y = new List<double>();
+        public List<double> price_open_short_order_x = new List<double>();
+        public List<double> price_open_short_order_y = new List<double>();
+        public List<double> price_close_order_x = new List<double>();
+        public List<double> price_close_order_y = new List<double>();
         private decimal _Price { get; set; }
         public decimal Price
         {
@@ -158,41 +147,6 @@ namespace BinanceShot.Model
                 }
                 // Chart
                 
-                if (_Select)
-                {
-                    if (price_buy_x.Count > 0)
-                    {
-                        plt.Plot.Remove(long_price);
-                        long_price = plt.Plot.AddScatter(price_buy_x.ToArray(), price_buy_y.ToArray(), color: Color.LightGreen, lineWidth: 0, markerSize: 5, label: _SymbolName);
-                        long_price.YAxisIndex = 1;
-                    }
-                    if (price_sell_x.Count > 0)
-                    {
-                        plt.Plot.Remove(short_price);
-                        short_price = plt.Plot.AddScatter(price_sell_x.ToArray(), price_sell_y.ToArray(), color: Color.Pink, lineWidth: 0, markerSize: 5);
-                        short_price.YAxisIndex = 1;
-                    }
-                    if (price_open_long_order_x.Count > 0)
-                    {
-                        plt.Plot.Remove(long_open_order);
-                        long_open_order = plt.Plot.AddScatter(price_open_long_order_x.ToArray(), price_open_long_order_y.ToArray(), color: Color.Green, lineWidth: 0, markerSize: 8);
-                        long_open_order.YAxisIndex = 1;
-                    }
-                    if (price_open_short_order_x.Count > 0)
-                    {
-                        plt.Plot.Remove(short_open_order);
-                        short_open_order = plt.Plot.AddScatter(price_open_short_order_x.ToArray(), price_open_short_order_y.ToArray(), color: Color.Red, lineWidth: 0, markerSize: 8);
-                        short_open_order.YAxisIndex = 1;
-                    }
-                    if (price_close_order_x.Count > 0)
-                    {
-                        plt.Plot.Remove(close_order);
-                        close_order = plt.Plot.AddScatter(price_close_order_x.ToArray(), price_close_order_y.ToArray(), color: Color.Red, lineWidth: 0, markerSize: 10, markerShape: ScottPlot.MarkerShape.eks);
-                        close_order.YAxisIndex = 1;
-                    }
-                    if(_AutoPlay) plt.Plot.SetAxisLimits(xMin: _UpdateTime.AddMinutes(-1).ToOADate(), xMax: _UpdateTime.AddSeconds(10).ToOADate(), yAxisIndex: 1);
-                    plt.Render();
-                }
             }
         }
         public bool _AutoPlay { get; set; } = true;
@@ -416,6 +370,7 @@ namespace BinanceShot.Model
                 if(value >= 5.1m) {
                     _MIN_USDT = value;
                     OnPropertyChanged("MIN_USDT");
+                    USDT = value;
                 }
             }
         }
@@ -438,6 +393,7 @@ namespace BinanceShot.Model
                 _MinQuantity = value;
                 OnPropertyChanged("MinQuantity");
                 Quantity = value + _StepSize;
+                MIN_USDT = _Quantity * _Price;
             }
         }
         private decimal RoundQuantity(decimal quantity)

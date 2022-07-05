@@ -49,5 +49,19 @@ namespace BinanceShot.Model
                 }
             }
         }
+
+        private decimal _USDT { get; set; }
+        public decimal USDT
+        {
+            get { return _USDT; }
+            set
+            {
+                if (value != 0m)
+                {
+                    _USDT = value;
+                    OnPropertyChanged("USDT");
+                }
+            }
+        }
     }
 }
