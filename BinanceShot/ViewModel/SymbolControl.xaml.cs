@@ -59,63 +59,50 @@ namespace BinanceShot.ViewModel
                     StopAsync();
                 }
             }
-            if (e.PropertyName == "Price")
+            if (symbol.Select)
             {
-
-                if (symbol.Select == true)
+                if (e.PropertyName == "PriceOpenLongOrder")
                 {
-                    if (symbol.price_buy_x.Count > 0)
+                    plt.Dispatcher.Invoke(() =>
+                    {
+                        plt.Plot.AddPoint(symbol.TimeOpenLongOrder, symbol.PriceOpenLongOrder, color: Color.Green, size: 10);
+                    });
+                }
+                if (e.PropertyName == "PriceOpenShortOrder")
+                {
+                    plt.Dispatcher.Invoke(() =>
+                    {
+                        plt.Plot.AddPoint(symbol.TimeOpenShortOrder, symbol.PriceOpenShortOrder, color: Color.Red, size: 10);
+                    });
+                }
+                if (e.PropertyName == "PriceOpenShortOrder")
+                {
+                    plt.Dispatcher.Invoke(() =>
+                    {
+                        plt.Plot.AddPoint(symbol.TimeCloseOrder, symbol.PriceCloseOrder, color: Color.Red, size: 10, shape: ScottPlot.MarkerShape.eks);
+                    });
+                }
+                if (e.PropertyName == "Price")
+                {
+                    if (symbol.BuyerIsMaker)
                     {
                         plt.Dispatcher.Invoke(() =>
                         {
-                            plt.Plot.Remove(long_price);
-                            long_price = plt.Plot.AddScatter(symbol.price_buy_x.ToArray(), symbol.price_buy_y.ToArray(), color: Color.Green, lineWidth: 0, markerSize: 5);
-                            long_price.YAxisIndex = 1;
+                            plt.Plot.AddPoint(symbol.UpdateTimeDouble, symbol.PriceDouble, color: Color.Green, size: 5);
                         });
                     }
-                    if (symbol.price_sell_x.Count > 0)
+                    else
                     {
                         plt.Dispatcher.Invoke(() =>
                         {
-                            plt.Plot.Remove(short_price);
-                            short_price = plt.Plot.AddScatter(symbol.price_sell_x.ToArray(), symbol.price_sell_y.ToArray(), color: Color.Red, lineWidth: 0, markerSize: 5);
-                            short_price.YAxisIndex = 1;
-                        });
-                    }
-                    if (symbol.price_open_long_order_x.Count > 0)
-                    {
-                        plt.Dispatcher.Invoke(() =>
-                        {
-                            plt.Plot.Remove(long_open_order);
-                            long_open_order = plt.Plot.AddScatter(symbol.price_open_long_order_x.ToArray(), symbol.price_open_long_order_y.ToArray(), color: Color.Green, lineWidth: 0, markerSize: 8);
-                            long_open_order.YAxisIndex = 1;
-                        });
-                    }
-                    if (symbol.price_open_short_order_x.Count > 0)
-                    {
-                        plt.Dispatcher.Invoke(() =>
-                        {
-                            plt.Plot.Remove(short_open_order);
-                            short_open_order = plt.Plot.AddScatter(symbol.price_open_short_order_x.ToArray(), symbol.price_open_short_order_y.ToArray(), color: Color.Red, lineWidth: 0, markerSize: 8);
-                            short_open_order.YAxisIndex = 1;
-                        });
-                    }
-                    if (symbol.price_close_order_x.Count > 0)
-                    {
-
-                        plt.Dispatcher.Invoke(() =>
-                        {
-                            plt.Plot.Remove(close_order);
-                            close_order = plt.Plot.AddScatter(symbol.price_close_order_x.ToArray(), symbol.price_close_order_y.ToArray(), color: Color.Red, lineWidth: 0, markerSize: 10, markerShape: ScottPlot.MarkerShape.eks);
-                            close_order.YAxisIndex = 1;
+                            plt.Plot.AddPoint(symbol.UpdateTimeDouble, symbol.PriceDouble, color: Color.Red, size: 5);
                         });
                     }
                     if (symbol.AutoPlay)
                     {
                         plt.Dispatcher.Invoke(() =>
                         {
-                            plt.Plot.SetAxisLimits(xMin: symbol.UpdateTime.AddMinutes(-1).ToOADate(), xMax: symbol.UpdateTime.AddSeconds(10).ToOADate(), yAxisIndex: 1);
-                            //plt.Plot.AxisAuto();
+                            plt.Plot.SetAxisLimits(xMin: symbol.UpdateTime.AddMinutes(-1).ToOADate(), xMax: symbol.UpdateTime.AddSeconds(10).ToOADate());
                         });
                     }
                     plt.Dispatcher.Invoke(() =>
@@ -124,7 +111,7 @@ namespace BinanceShot.ViewModel
                     });
                 }
             }
-
+            
             if (e.PropertyName == "Select")
             {
                 plt.Dispatcher.Invoke(() =>

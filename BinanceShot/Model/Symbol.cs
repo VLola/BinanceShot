@@ -65,16 +65,41 @@ namespace BinanceShot.Model
                 OnPropertyChanged("Select");
             }
         }
-        public List<double> price_buy_x = new List<double>();
-        public List<double> price_buy_y = new List<double>();
-        public List<double> price_sell_x = new List<double>();
-        public List<double> price_sell_y = new List<double>();
-        public List<double> price_open_long_order_x = new List<double>();
-        public List<double> price_open_long_order_y = new List<double>();
-        public List<double> price_open_short_order_x = new List<double>();
-        public List<double> price_open_short_order_y = new List<double>();
-        public List<double> price_close_order_x = new List<double>();
-        public List<double> price_close_order_y = new List<double>();
+        public double PriceDouble { get; set; }
+        public double UpdateTimeDouble { get; set; }
+        public double TimeCloseOrder { get; set; }
+        private double _PriceCloseOrder { get; set; }
+        public double PriceCloseOrder
+        {
+            get { return _PriceCloseOrder; }
+            set
+            {
+                _PriceCloseOrder = value;
+                OnPropertyChanged("PriceCloseOrder");
+            }
+        }
+        public double TimeOpenShortOrder { get; set; }
+        private double _PriceOpenShortOrder { get; set; }
+        public double PriceOpenShortOrder
+        {
+            get { return _PriceOpenShortOrder; }
+            set
+            {
+                _PriceOpenShortOrder = value;
+                OnPropertyChanged("PriceOpenShortOrder");
+            }
+        }
+        public double TimeOpenLongOrder { get; set; }
+        private double _PriceOpenLongOrder { get; set; }
+        public double PriceOpenLongOrder
+        {
+            get { return _PriceOpenLongOrder; }
+            set
+            {
+                _PriceOpenLongOrder = value;
+                OnPropertyChanged("PriceOpenLongOrder");
+            }
+        }
         private decimal _Price { get; set; }
         public decimal Price
         {
@@ -82,25 +107,16 @@ namespace BinanceShot.Model
             set
             {
                 _Price = value;
-                OnPropertyChanged("Price");
-                if (!_BuyerIsMaker)
-                {
-                    price_buy_x.Add(_UpdateTime.ToOADate());
-                    price_buy_y.Add(Double.Parse(value.ToString()));
-                }
-                else
-                {
-                    price_sell_x.Add(_UpdateTime.ToOADate());
-                    price_sell_y.Add(Double.Parse(value.ToString()));
-                }
+                PriceDouble = Double.Parse(value.ToString());
+                UpdateTimeDouble = UpdateTime.ToOADate();
                 if (!isBet && value >= _PriceActivateShort && _PriceActivateShort > 0m)
                 {
                     // Open
                     isBet = true;
                     isShort = true;
                     CountShort = _CountShort + 1;
-                    price_open_short_order_x.Add(_UpdateTime.ToOADate());
-                    price_open_short_order_y.Add(Double.Parse(value.ToString()));
+                    TimeOpenShortOrder = _UpdateTime.ToOADate();
+                    PriceOpenShortOrder = Double.Parse(value.ToString());
                 }
                 else if (!isBet && value <= _PriceActivateLong && _PriceActivateLong > 0m)
                 {
@@ -108,22 +124,22 @@ namespace BinanceShot.Model
                     isBet = true;
                     isLong = true;
                     CountLong = _CountLong + 1;
-                    price_open_long_order_x.Add(_UpdateTime.ToOADate());
-                    price_open_long_order_y.Add(Double.Parse(value.ToString()));
+                    TimeOpenLongOrder = _UpdateTime.ToOADate();
+                    PriceOpenLongOrder = Double.Parse(value.ToString());
                 }
                 else if (isBet && isLong && value >= PriceTakeProfitLong)
                 {
                     Positive = _Positive + 1;
-                    price_close_order_x.Add(_UpdateTime.ToOADate());
-                    price_close_order_y.Add(Double.Parse(value.ToString()));
+                    TimeCloseOrder = _UpdateTime.ToOADate();
+                    PriceCloseOrder = Double.Parse(value.ToString());
                     // Close
                     isLong = false;
                     isBet = false;
                 }
                 else if (isBet && isLong && value <= PriceStopLossLong)
                 {
-                    price_close_order_x.Add(_UpdateTime.ToOADate());
-                    price_close_order_y.Add(Double.Parse(value.ToString()));
+                    TimeCloseOrder = _UpdateTime.ToOADate();
+                    PriceCloseOrder = Double.Parse(value.ToString());
                     // Close
                     isLong = false;
                     isBet = false;
@@ -131,22 +147,21 @@ namespace BinanceShot.Model
                 else if (isBet && isShort && value <= PriceTakeProfitShort)
                 {
                     Positive = _Positive + 1;
-                    price_close_order_x.Add(_UpdateTime.ToOADate());
-                    price_close_order_y.Add(Double.Parse(value.ToString()));
+                    TimeCloseOrder = _UpdateTime.ToOADate();
+                    PriceCloseOrder = Double.Parse(value.ToString());
                     // Close
                     isShort = false;
                     isBet = false;
                 }
                 else if (isBet && isShort && value >= PriceStopLossShort)
                 {
-                    price_close_order_x.Add(_UpdateTime.ToOADate());
-                    price_close_order_y.Add(Double.Parse(value.ToString()));
+                    TimeCloseOrder = _UpdateTime.ToOADate();
+                    PriceCloseOrder = Double.Parse(value.ToString());
                     // Close
                     isShort = false;
                     isBet = false;
                 }
-                // Chart
-                
+                OnPropertyChanged("Price");
             }
         }
         public bool _AutoPlay { get; set; } = true;
